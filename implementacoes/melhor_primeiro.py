@@ -7,31 +7,78 @@ def best_first_search(root):
     open.put((heuristic(root),root))
     ultimo = []
 
-    while not open.empty():
-        v_heuristica,next_state = open.get()
-        print(next_state)
-        aux = ultimo
-        ultimo = next_state
+    state = root
+    menor_valor = heuristic(state)
+
+    while heuristic(state) != 0:
+        close.append(state)
+        nos_vizinhos = vizinhos(state)
+
+        no_aux = []
+
+        for vizinho in nos_vizinhos:
+            if vizinho not in close:
+                no_aux.append(vizinho)
+
+        nos_vizinhos = no_aux
+
+        # aux = [row[:] for row in state]
+
+        menor_valor = 999
+        o_brabo = []
+
+
+        if len(nos_vizinhos) == 0:
+            h, candidato = open.get()
+            while candidato in close:
+                h, candidato = open.get()
+
+            state = candidato
+            continue           
+
+
+
+        for vizinho in nos_vizinhos:
+            open.put((heuristic(vizinho),vizinho))
+            if heuristic(vizinho) < menor_valor:
+                menor_valor = heuristic(vizinho)
+                o_brabo = vizinho
         
-        if v_heuristica == 0:
-            break
-
-
-        nos_viznhos = vizinhos(next_state)
-
-        for no in nos_viznhos:
-            if no not in close:
-                open.put((heuristic(no),no))
-        
-
-        close.append(next_state)
-
-        # print(ultimo)
+        state = o_brabo
 
         
 
 
-    return ultimo
+
+
+    # while not open.empty():
+    #     v_heuristica,next_state = open.get()
+    #     print(next_state)
+    #     aux = ultimo
+    #     ultimo = next_state
+        
+    #     if v_heuristica == 0:
+    #         break
+
+
+    #     nos_viznhos = vizinhos(next_state)
+
+    #     for no in nos_viznhos:
+    #         if no not in close:
+    #             open.put((heuristic(no),no))
+        
+
+    #     close.append(next_state)
+
+    
+    
+
+        # print(state)
+
+        
+
+
+    return state
 
 
 def vizinhos(state):
@@ -80,17 +127,35 @@ def posicao_valida(pos):
 
 def heuristic(state):
     matriz = [[1,2,3],[4,5,6],[7,8,0]]
+    global posicoes_corretas
     diferenca = 0
 
     for i in range(len(matriz)):
         for j in range(len(matriz[0])):
-            diferenca += abs(matriz[i][j] - state[i][j])
+            numero = state[i][j]
+            i_ideal, j_ideal = posicoes_corretas[numero]
+            andadas = abs(i - i_ideal) + abs(j - j_ideal)
+            diferenca += andadas
 
     return diferenca
 
+# def heuristic(state):
+#     matriz = [[1,2,3],[4,5,6],[7,8,0]]
+#     diferenca = 0
 
-matriz = [[2,1,4],[7,5,6],[3,8,0]]
-matriz = [[1,2,3],[4,5,6],[7,0,8]]
+#     for i in range(len(matriz)):
+#         for j in range(len(matriz[0])):
+#             diferenca += abs(matriz[i][j] - state[i][j])
+
+#     return diferenca
+
+
+posicoes_corretas = [(2,2),(0,0),(0,1),(0,2),(1,0),(1,1),(1,2),(2,0),(2,1)]
+
+
+
+
+matriz = [[1,2,3],[7,8,0],[4,5,6]]
 
 solucao = best_first_search(matriz)
 print(solucao)
